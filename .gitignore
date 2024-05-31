@@ -1,5 +1,8 @@
 /bak/
 /build/
 /destdir/
+/html/
+/latex/
 .cache/
 .vscode/
+/Doxyfile
