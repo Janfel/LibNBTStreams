@@ -70,27 +70,36 @@ struct nbts_print_handler_data nbts_print_handler_data(FILE *nonnull ostream)
 	return (struct nbts_print_handler_data){.ostream = ostream};
 }
 
-#define PREAMBLE()                                                        \
-	size_t index = data->index++;                                         \
-	if (index) {                                                          \
-		TRYF(fputs(", ", data->ostream));                                 \
-	}                                                                     \
-	if (name_size) {                                                      \
-		char quote = data->use_singlequotes ? '\'' : '"';                 \
-		TRY(nbts_fprint_string(data->ostream, stream, name_size, quote)); \
-		TRYF(fputc(':', data->ostream));                                  \
+static inline enum nbts_error print_prefix(
+	struct nbts_print_handler_data *restrict nonnull data,
+	size_t name_size,
+	FILE *restrict nonnull stream)
+{
+	if (data->index) {
+		TRYF(fputs(", ", data->ostream));
 	}
+
+	if (name_size) {
+		char quote = data->use_singlequotes ? '\'' : '"';
+		TRY(nbts_fprint_string(data->ostream, stream, name_size, quote));
+		TRYF(fputc(':', data->ostream));
+	}
+
+	return NBTS_OK;
+}
 
 enum nbts_error nbts_print_handle_byte(
 	struct nbts_print_handler_data *restrict nonnull data,
 	size_t name_size,
 	FILE *restrict nonnull stream)
 {
-	PREAMBLE();
+	TRY(print_prefix(data, name_size, stream));
 
 	nbts_byte value = 0;
 	TRY(nbts_parse_byte(&value, stream));
 	TRY(nbts_fprint_byte(data->ostream, value));
+
+	data->index += 1;
 	return NBTS_OK;
 }
 
@@ -99,11 +108,13 @@ enum nbts_error nbts_print_handle_short(
 	size_t name_size,
 	FILE *restrict nonnull stream)
 {
-	PREAMBLE();
+	TRY(print_prefix(data, name_size, stream));
 
 	nbts_short value = 0;
 	TRY(nbts_parse_short(&value, stream));
 	TRY(nbts_fprint_short(data->ostream, value));
+
+	data->index += 1;
 	return NBTS_OK;
 }
 
@@ -112,11 +123,13 @@ enum nbts_error nbts_print_handle_int(
 	size_t name_size,
 	FILE *restrict nonnull stream)
 {
-	PREAMBLE();
+	TRY(print_prefix(data, name_size, stream));
 
 	nbts_int value = 0;
 	TRY(nbts_parse_int(&value, stream));
 	TRY(nbts_fprint_int(data->ostream, value));
+
+	data->index += 1;
 	return NBTS_OK;
 }
 
@@ -125,11 +138,13 @@ enum nbts_error nbts_print_handle_long(
 	size_t name_size,
 	FILE *restrict nonnull stream)
 {
-	PREAMBLE();
+	TRY(print_prefix(data, name_size, stream));
 
 	nbts_long value = 0;
 	TRY(nbts_parse_long(&value, stream));
 	TRY(nbts_fprint_long(data->ostream, value));
+
+	data->index += 1;
 	return NBTS_OK;
 }
 
@@ -138,11 +153,13 @@ enum nbts_error nbts_print_handle_float(
 	size_t name_size,
 	FILE *restrict nonnull stream)
 {
-	PREAMBLE();
+	TRY(print_prefix(data, name_size, stream));
 
 	nbts_float value = 0;
 	TRY(nbts_parse_float(&value, stream));
 	TRY(nbts_fprint_float(data->ostream, value));
+
+	data->index += 1;
 	return NBTS_OK;
 }
 
@@ -151,11 +168,13 @@ enum nbts_error nbts_print_handle_double(
 	size_t name_size,
 	FILE *restrict nonnull stream)
 {
-	PREAMBLE();
+	TRY(print_prefix(data, name_size, stream));
 
 	nbts_double value = 0;
 	TRY(nbts_parse_double(&value, stream));
 	TRY(nbts_fprint_double(data->ostream, value));
+
+	data->index += 1;
 	return NBTS_OK;
 }
 
@@ -164,13 +183,14 @@ enum nbts_error nbts_print_handle_string(
 	size_t name_size,
 	FILE *restrict nonnull stream)
 {
-	PREAMBLE();
+	TRY(print_prefix(data, name_size, stream));
 
 	nbts_strsize string_size = 0;
 	TRY(nbts_parse_strsize(&string_size, stream));
 	TRY(nbts_fprint_string(
 		data->ostream, stream, string_size, data->use_singlequotes ? '\'' : '"'));
 
+	data->index += 1;
 	return NBTS_OK;
 }
 
@@ -179,12 +199,13 @@ enum nbts_error nbts_print_handle_byte_array(
 	size_t name_size,
 	FILE *restrict nonnull stream)
 {
-	PREAMBLE();
+	TRY(print_prefix(data, name_size, stream));
 
 	nbts_size array_size = 0;
 	TRY(nbts_parse_size(&array_size, stream));
 	TRY(nbts_fprint_byte_array(data->ostream, stream, array_size));
 
+	data->index += 1;
 	return NBTS_OK;
 }
 
@@ -193,12 +214,13 @@ enum nbts_error nbts_print_handle_int_array(
 	size_t name_size,
 	FILE *restrict nonnull stream)
 {
-	PREAMBLE();
+	TRY(print_prefix(data, name_size, stream));
 
 	nbts_size array_size = 0;
 	TRY(nbts_parse_size(&array_size, stream));
 	TRY(nbts_fprint_byte_array(data->ostream, stream, array_size));
 
+	data->index += 1;
 	return NBTS_OK;
 }
 
@@ -207,12 +229,13 @@ enum nbts_error nbts_print_handle_long_array(
 	size_t name_size,
 	FILE *restrict nonnull stream)
 {
-	PREAMBLE();
+	TRY(print_prefix(data, name_size, stream));
 
 	nbts_size array_size = 0;
 	TRY(nbts_parse_size(&array_size, stream));
 	TRY(nbts_fprint_byte_array(data->ostream, stream, array_size));
 
+	data->index += 1;
 	return NBTS_OK;
 }
 
@@ -221,7 +244,7 @@ enum nbts_error nbts_print_handle_list(
 	size_t name_size,
 	FILE *restrict nonnull stream)
 {
-	PREAMBLE();
+	TRY(print_prefix(data, name_size, stream));
 
 	enum nbts_type type = 0;
 	TRY(nbts_parse_typeid(&type, stream));
@@ -231,11 +254,14 @@ enum nbts_error nbts_print_handle_list(
 
 	TRYF(fputc('[', data->ostream));
 
+	size_t index = data->index;
 	data->index = 0;
 	TRY(nbts_parse_list(type, size, stream, &nbts_print_handler, data));
-	data->index = index + 1;
+	data->index = index;
 
 	TRYF(fputc(']', data->ostream));
+
+	data->index += 1;
 	return NBTS_OK;
 }
 
@@ -244,15 +270,18 @@ enum nbts_error nbts_print_handle_compound(
 	size_t name_size,
 	FILE *restrict nonnull stream)
 {
-	PREAMBLE();
+	TRY(print_prefix(data, name_size, stream));
 
 	TRYF(fputc('{', data->ostream));
 
+	size_t index = data->index;
 	data->index = 0;
 	TRY(nbts_parse_compound(stream, &nbts_print_handler, data));
-	data->index = index + 1;
+	data->index = index;
 
 	TRYF(fputc('}', data->ostream));
+
+	data->index += 1;
 	return NBTS_OK;
 }
 
