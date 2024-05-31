@@ -30,43 +30,43 @@ xfwrite(void const *restrict nonnull ptr, size_t size, size_t count, FILE *restr
 	return 1;
 }
 
-enum nbts_error nbts_fprint_bool(FILE *stream, nbts_byte x)
+enum nbts_error nbts_fprint_bool(FILE *restrict nonnull stream, nbts_byte x)
 {
 	TRYF(x ? fputs("true", stream) : fputs("false", stream));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_fprint_byte(FILE *stream, nbts_byte x)
+enum nbts_error nbts_fprint_byte(FILE *restrict nonnull stream, nbts_byte x)
 {
 	TRYF(fprintf(stream, "%" PRId8 "B", x));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_fprint_short(FILE *stream, nbts_short x)
+enum nbts_error nbts_fprint_short(FILE *restrict nonnull stream, nbts_short x)
 {
 	TRYF(fprintf(stream, "%" PRId16 "S", x));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_fprint_int(FILE *stream, nbts_int x)
+enum nbts_error nbts_fprint_int(FILE *restrict nonnull stream, nbts_int x)
 {
 	TRYF(fprintf(stream, "%" PRId32, x));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_fprint_long(FILE *stream, nbts_long x)
+enum nbts_error nbts_fprint_long(FILE *restrict nonnull stream, nbts_long x)
 {
 	TRYF(fprintf(stream, "%" PRId64 "L", x));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_fprint_float(FILE *stream, nbts_float x)
+enum nbts_error nbts_fprint_float(FILE *restrict nonnull stream, nbts_float x)
 {
 	TRYF(fprintf(stream, "%fF", x));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_fprint_double(FILE *stream, nbts_double x)
+enum nbts_error nbts_fprint_double(FILE *restrict nonnull stream, nbts_double x)
 {
 	TRYF(fprintf(stream, "%f", x));
 	return NBTS_OK;
@@ -84,8 +84,11 @@ fprint_memchr(nbts_char const *restrict string, size_t string_size, char quote)
 	return bp ? bp : qp;
 }
 
-static enum nbts_error
-fprint_substring(FILE *ostream, nbts_char const *restrict string, size_t string_size, char quote)
+static enum nbts_error fprint_substring(
+	FILE *restrict nonnull ostream,
+	nbts_char const *restrict string,
+	size_t string_size,
+	char quote)
 {
 	nbts_char const *a = string;
 	nbts_char const *z = &string[string_size];
@@ -100,7 +103,8 @@ fprint_substring(FILE *ostream, nbts_char const *restrict string, size_t string_
 	return 0;
 }
 
-enum nbts_error nbts_fprint_string(FILE *ostream, FILE *istream, size_t string_size, char quote)
+enum nbts_error nbts_fprint_string(
+	FILE *restrict nonnull ostream, FILE *restrict nonnull istream, size_t string_size, char quote)
 {
 	TRYF(fputc(quote, ostream));
 
@@ -120,7 +124,7 @@ enum nbts_error nbts_fprint_string(FILE *ostream, FILE *istream, size_t string_s
 // NOLINTEND(bugprone-easily-swappable-parameters)
 
 enum nbts_error
-nbts_fprint_byte_array(FILE *stream, nbts_byte const *restrict array, size_t array_size)
+nbts_fprint_byte_array(FILE *restrict nonnull ostream, nbts_byte const *restrict array, size_t array_size)
 {
 	TRYF(fputs("[B;", stream));
 
@@ -135,7 +139,7 @@ nbts_fprint_byte_array(FILE *stream, nbts_byte const *restrict array, size_t arr
 }
 
 enum nbts_error
-nbts_fprint_int_array(FILE *stream, nbts_int const *restrict array, size_t array_size)
+nbts_fprint_int_array(FILE *restrict nonnull ostream, nbts_int const *restrict array, size_t array_size)
 {
 	TRYF(fputs("[I;", stream));
 
@@ -150,7 +154,7 @@ nbts_fprint_int_array(FILE *stream, nbts_int const *restrict array, size_t array
 }
 
 enum nbts_error
-nbts_fprint_long_array(FILE *stream, nbts_long const *restrict array, size_t array_size)
+nbts_fprint_long_array(FILE *restrict nonnull ostream, nbts_long const *restrict array, size_t array_size)
 {
 	TRYF(fputs("[L;", stream));
 
@@ -199,7 +203,7 @@ struct nbts_handler const nbts_print_handler = {
 	.handle_compound = &handle_compound,
 };
 
-struct nbts_print_handler_data nbts_print_handler_data(FILE *restrict nonnull ostream)
+struct nbts_print_handler_data nbts_print_handler_data(FILE *nonnull ostream)
 {
 	return (struct nbts_print_handler_data){.ostream = ostream};
 }
@@ -216,7 +220,9 @@ struct nbts_print_handler_data nbts_print_handler_data(FILE *restrict nonnull os
 	}
 
 enum nbts_error nbts_print_handle_byte(
-	struct nbts_print_handler_data *data, size_t name_size, FILE *restrict nonnull stream)
+	struct nbts_print_handler_data *restrict nonnull data,
+	size_t name_size,
+	FILE *restrict nonnull stream)
 {
 	PREAMBLE();
 
@@ -227,7 +233,9 @@ enum nbts_error nbts_print_handle_byte(
 }
 
 enum nbts_error nbts_print_handle_short(
-	struct nbts_print_handler_data *data, size_t name_size, FILE *restrict nonnull stream)
+	struct nbts_print_handler_data *restrict nonnull data,
+	size_t name_size,
+	FILE *restrict nonnull stream)
 {
 	PREAMBLE();
 
@@ -238,7 +246,9 @@ enum nbts_error nbts_print_handle_short(
 }
 
 enum nbts_error nbts_print_handle_int(
-	struct nbts_print_handler_data *data, size_t name_size, FILE *restrict nonnull stream)
+	struct nbts_print_handler_data *restrict nonnull data,
+	size_t name_size,
+	FILE *restrict nonnull stream)
 {
 	PREAMBLE();
 
@@ -249,7 +259,9 @@ enum nbts_error nbts_print_handle_int(
 }
 
 enum nbts_error nbts_print_handle_long(
-	struct nbts_print_handler_data *data, size_t name_size, FILE *restrict nonnull stream)
+	struct nbts_print_handler_data *restrict nonnull data,
+	size_t name_size,
+	FILE *restrict nonnull stream)
 {
 	PREAMBLE();
 
@@ -260,7 +272,9 @@ enum nbts_error nbts_print_handle_long(
 }
 
 enum nbts_error nbts_print_handle_float(
-	struct nbts_print_handler_data *data, size_t name_size, FILE *restrict nonnull stream)
+	struct nbts_print_handler_data *restrict nonnull data,
+	size_t name_size,
+	FILE *restrict nonnull stream)
 {
 	PREAMBLE();
 
@@ -271,7 +285,9 @@ enum nbts_error nbts_print_handle_float(
 }
 
 enum nbts_error nbts_print_handle_double(
-	struct nbts_print_handler_data *data, size_t name_size, FILE *restrict nonnull stream)
+	struct nbts_print_handler_data *restrict nonnull data,
+	size_t name_size,
+	FILE *restrict nonnull stream)
 {
 	PREAMBLE();
 
@@ -282,7 +298,9 @@ enum nbts_error nbts_print_handle_double(
 }
 
 enum nbts_error nbts_print_handle_string(
-	struct nbts_print_handler_data *data, size_t name_size, FILE *restrict nonnull stream)
+	struct nbts_print_handler_data *restrict nonnull data,
+	size_t name_size,
+	FILE *restrict nonnull stream)
 {
 	PREAMBLE();
 
@@ -295,7 +313,9 @@ enum nbts_error nbts_print_handle_string(
 }
 
 enum nbts_error nbts_print_handle_byte_array(
-	struct nbts_print_handler_data *data, size_t name_size, FILE *restrict nonnull stream)
+	struct nbts_print_handler_data *restrict nonnull data,
+	size_t name_size,
+	FILE *restrict nonnull stream)
 {
 	PREAMBLE();
 
@@ -322,7 +342,9 @@ cleanup:
 }
 
 enum nbts_error nbts_print_handle_int_array(
-	struct nbts_print_handler_data *data, size_t name_size, FILE *restrict nonnull stream)
+	struct nbts_print_handler_data *restrict nonnull data,
+	size_t name_size,
+	FILE *restrict nonnull stream)
 {
 	PREAMBLE();
 
@@ -349,7 +371,9 @@ cleanup:
 }
 
 enum nbts_error nbts_print_handle_long_array(
-	struct nbts_print_handler_data *data, size_t name_size, FILE *restrict nonnull stream)
+	struct nbts_print_handler_data *restrict nonnull data,
+	size_t name_size,
+	FILE *restrict nonnull stream)
 {
 	PREAMBLE();
 
@@ -376,7 +400,9 @@ cleanup:
 }
 
 enum nbts_error nbts_print_handle_list(
-	struct nbts_print_handler_data *data, size_t name_size, FILE *restrict nonnull stream)
+	struct nbts_print_handler_data *restrict nonnull data,
+	size_t name_size,
+	FILE *restrict nonnull stream)
 {
 	PREAMBLE();
 
@@ -397,7 +423,9 @@ enum nbts_error nbts_print_handle_list(
 }
 
 enum nbts_error nbts_print_handle_compound(
-	struct nbts_print_handler_data *data, size_t name_size, FILE *restrict nonnull stream)
+	struct nbts_print_handler_data *restrict nonnull data,
+	size_t name_size,
+	FILE *restrict nonnull stream)
 {
 	PREAMBLE();
 
