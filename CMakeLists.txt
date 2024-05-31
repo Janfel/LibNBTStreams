@@ -39,7 +39,7 @@ add_library(NBTStreams)
 add_library(NBTStreams::NBTStreams ALIAS NBTStreams)
 target_sources(NBTStreams PRIVATE nbts/nbts.c nbts/print.c)
 target_sources(NBTStreams PUBLIC FILE_SET HEADERS FILES nbts/nbts.h nbts/print.h)
-target_compile_features(NBTStreams PRIVATE c_std_23 PUBLIC c_std_99)
+target_compile_features(NBTStreams PUBLIC c_std_23)
 target_link_libraries(NBTStreams PRIVATE $<BUILD_LOCAL_INTERFACE:NBTStreams_Options>)
 set_target_properties(NBTStreams PROPERTIES
     OUTPUT_NAME "nbts" C_EXTENSIONS ON
