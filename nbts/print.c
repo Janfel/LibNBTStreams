@@ -299,7 +299,6 @@ enum nbts_error nbts_fprint_double(FILE *restrict nonnull stream, nbts_double x)
 	return NBTS_OK;
 }
 
-#define FPRINT_BUFSIZE NBTS_MAX_STACK_BUFFER_SIZE
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
 
 static nbts_char const *
@@ -327,13 +326,13 @@ static enum nbts_error fprint_substring(
 
 	TRYF(xfwrite(a, sizeof(*a), z - a, ostream));
 
-	return 0;
+	return NBTS_OK;
 }
 
 enum nbts_error nbts_fprint_string(
 	FILE *restrict nonnull ostream, FILE *restrict nonnull istream, size_t string_size, char quote)
 {
-	enum : size_t { BUFSIZE = FPRINT_BUFSIZE / sizeof(nbts_char) };
+	enum : size_t { BUFSIZE = NBTS_STACK_BUFFER_SIZE / sizeof(nbts_char) };
 
 	TRYF(fputc(quote, ostream));
 
@@ -347,7 +346,7 @@ enum nbts_error nbts_fprint_string(
 
 	TRYF(fputc(quote, ostream));
 
-	return 0;
+	return NBTS_OK;
 }
 
 // NOLINTEND(bugprone-easily-swappable-parameters)
@@ -359,7 +358,7 @@ static enum nbts_error fprint_byte_subarray(
 		if (i) TRYF(fputc(',', ostream));
 		TRY(nbts_fprint_byte(ostream, array[i]));
 	}
-	return 0;
+	return NBTS_OK;
 }
 
 static enum nbts_error fprint_int_subarray(
@@ -369,7 +368,7 @@ static enum nbts_error fprint_int_subarray(
 		if (i) TRYF(fputc(',', ostream));
 		TRY(nbts_fprint_int(ostream, array[i]));
 	}
-	return 0;
+	return NBTS_OK;
 }
 
 static enum nbts_error fprint_long_subarray(
@@ -379,13 +378,13 @@ static enum nbts_error fprint_long_subarray(
 		if (i) TRYF(fputc(',', ostream));
 		TRY(nbts_fprint_long(ostream, array[i]));
 	}
-	return 0;
+	return NBTS_OK;
 }
 
 enum nbts_error nbts_fprint_byte_array(
 	FILE *restrict nonnull ostream, FILE *restrict nonnull istream, size_t array_size)
 {
-	enum : size_t { BUFSIZE = FPRINT_BUFSIZE / sizeof(nbts_byte) };
+	enum : size_t { BUFSIZE = NBTS_STACK_BUFFER_SIZE / sizeof(nbts_byte) };
 
 	TRYF(fputs("[B;", ostream));
 
@@ -400,13 +399,13 @@ enum nbts_error nbts_fprint_byte_array(
 
 	TRYF(fputc(']', ostream));
 
-	return 0;
+	return NBTS_OK;
 }
 
 enum nbts_error nbts_fprint_int_array(
 	FILE *restrict nonnull ostream, FILE *restrict nonnull istream, size_t array_size)
 {
-	enum : size_t { BUFSIZE = FPRINT_BUFSIZE / sizeof(nbts_int) };
+	enum : size_t { BUFSIZE = NBTS_STACK_BUFFER_SIZE / sizeof(nbts_int) };
 
 	TRYF(fputs("[I;", ostream));
 
@@ -421,13 +420,13 @@ enum nbts_error nbts_fprint_int_array(
 
 	TRYF(fputc(']', ostream));
 
-	return 0;
+	return NBTS_OK;
 }
 
 enum nbts_error nbts_fprint_long_array(
 	FILE *restrict nonnull ostream, FILE *restrict nonnull istream, size_t array_size)
 {
-	enum : size_t { BUFSIZE = FPRINT_BUFSIZE / sizeof(nbts_long) };
+	enum : size_t { BUFSIZE = NBTS_STACK_BUFFER_SIZE / sizeof(nbts_long) };
 
 	TRYF(fputs("[L;", ostream));
 
@@ -442,5 +441,5 @@ enum nbts_error nbts_fprint_long_array(
 
 	TRYF(fputc(']', ostream));
 
-	return 0;
+	return NBTS_OK;
 }

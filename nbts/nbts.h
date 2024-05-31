@@ -13,7 +13,7 @@
 #define nullable
 #endif
 
-enum : size_t { NBTS_MAX_STACK_BUFFER_SIZE = 256 };
+enum : size_t { NBTS_STACK_BUFFER_SIZE = 2048 };
 
 enum nbts_type : uint8_t {
 	NBTS_END = 0,
