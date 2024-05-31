@@ -41,6 +41,7 @@ enum [[nodiscard]] nbts_error {
 	NBTS_UNEXPECTED_END_TAG,
 	NBTS_INVALID_ID,
 	NBTS_INVALID_SIZE,
+	NBTS_CUSTOM_ERR = 1000,
 };
 
 typedef uint8_t nbts_char;
