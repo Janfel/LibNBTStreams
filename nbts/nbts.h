@@ -117,6 +117,11 @@ enum nbts_error nbts_parse_tag(
 	struct nbts_handler const *restrict handler,
 	void *restrict userdata);
 
+enum nbts_error nbts_parse_network_tag(
+	FILE *restrict nonnull stream,
+	struct nbts_handler const *restrict handler,
+	void *restrict userdata);
+
 enum nbts_error nbts_skip_byte(FILE *restrict nonnull stream);
 enum nbts_error nbts_skip_short(FILE *restrict nonnull stream);
 enum nbts_error nbts_skip_int(FILE *restrict nonnull stream);

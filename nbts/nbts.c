@@ -217,21 +217,6 @@ enum nbts_error nbts_parse_compound(
 	return NBTS_OK;
 }
 
-
-#define PARSE_TAG_CASE(TYPE)                                       \
-	if (handler && handler->handle_##TYPE) {                       \
-		nbts_strsize name_size = 0;                                \
-		TRY(nbts_parse_strsize(&name_size, stream));               \
-                                                                   \
-		nbts_char name[name_size];                                 \
-		TRY(nbts_parse_string(name, name_size, stream));           \
-                                                                   \
-		handler->handle_##TYPE(userdata, name, name_size, stream); \
-	} else {                                                       \
-		nbts_skip_string(stream);                                  \
-		nbts_skip_##TYPE(stream);                                  \
-	}
-
 // NOLINTNEXTLINE(misc-no-recursion)
 enum nbts_error nbts_parse_tag(
 	FILE *restrict nonnull stream,
@@ -257,8 +242,29 @@ enum nbts_error nbts_parse_tag(
 	return NBTS_OK;
 }
 
-#undef PARSE_TAG_CASE
+enum nbts_error nbts_parse_network_tag(
+	FILE *restrict nonnull stream,
+	struct nbts_handler const *restrict handler,
+	void *restrict userdata)
+{
+	enum nbts_type type = 0;
+	TRY(nbts_parse_typeid(&type, stream));
 
+	if (type == NBTS_END) return NBTS_UNEXPECTED_END_TAG;
+
+	nbts_handler_fn *handler_fn = nbts_get_handler_fn(type, handler);
+	if (!handler_fn) {
+		nbts_skip_fn *skip_fn = nbts_get_skip_fn(type);
+		// TRY(nbts_skip_string(stream));
+		TRY(skip_fn(stream));
+		return NBTS_OK;
+	}
+
+	nbts_strsize name_size = 0;
+	// TRY(nbts_parse_strsize(&name_size, stream));
+	TRY(handler_fn(userdata, name_size, stream));
+	return NBTS_OK;
+}
 
 enum nbts_error nbts_skip_end([[maybe_unused]] FILE *restrict nonnull stream) { return NBTS_OK; }
 
