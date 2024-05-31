@@ -30,39 +30,23 @@ xfwrite(void const *restrict nonnull ptr, size_t size, size_t count, FILE *restr
 	return 1;
 }
 
-#define HANDLER_WRAPPER(TYPE)                                            \
-	static enum nbts_error handle_##TYPE(                                \
-		void *userdata, size_t name_size, FILE *restrict nonnull stream) \
-	{                                                                    \
-		return nbts_print_handle_##TYPE(userdata, name_size, stream);    \
-	}
-
-HANDLER_WRAPPER(byte)
-HANDLER_WRAPPER(short)
-HANDLER_WRAPPER(int)
-HANDLER_WRAPPER(long)
-HANDLER_WRAPPER(float)
-HANDLER_WRAPPER(double)
-HANDLER_WRAPPER(string)
-HANDLER_WRAPPER(byte_array)
-HANDLER_WRAPPER(int_array)
-HANDLER_WRAPPER(long_array)
-HANDLER_WRAPPER(list)
-HANDLER_WRAPPER(compound)
+#define COVARIANT_CAST(FUNC, ...)                                         \
+	(sizeof((&FUNC)((void *) 0, (size_t) 0, (FILE *restrict nonnull) 0)), \
+	 (enum nbts_error(*)(void *, size_t, FILE *restrict nonnull))(&FUNC))
 
 struct nbts_handler const nbts_print_handler = {
-	.handle_byte = &handle_byte,
-	.handle_short = &handle_short,
-	.handle_int = &handle_int,
-	.handle_long = &handle_long,
-	.handle_float = &handle_float,
-	.handle_double = &handle_double,
-	.handle_string = &handle_string,
-	.handle_byte_array = &handle_byte_array,
-	.handle_int_array = &handle_int_array,
-	.handle_long_array = &handle_long_array,
-	.handle_list = &handle_list,
-	.handle_compound = &handle_compound,
+	.handle[NBTS_BYTE] = COVARIANT_CAST(nbts_print_handle_byte),
+	.handle[NBTS_SHORT] = COVARIANT_CAST(nbts_print_handle_short),
+	.handle[NBTS_INT] = COVARIANT_CAST(nbts_print_handle_int),
+	.handle[NBTS_LONG] = COVARIANT_CAST(nbts_print_handle_long),
+	.handle[NBTS_FLOAT] = COVARIANT_CAST(nbts_print_handle_float),
+	.handle[NBTS_DOUBLE] = COVARIANT_CAST(nbts_print_handle_double),
+	.handle[NBTS_STRING] = COVARIANT_CAST(nbts_print_handle_string),
+	.handle[NBTS_BYTE_ARRAY] = COVARIANT_CAST(nbts_print_handle_byte_array),
+	.handle[NBTS_INT_ARRAY] = COVARIANT_CAST(nbts_print_handle_int_array),
+	.handle[NBTS_LONG_ARRAY] = COVARIANT_CAST(nbts_print_handle_long_array),
+	.handle[NBTS_LIST] = COVARIANT_CAST(nbts_print_handle_list),
+	.handle[NBTS_COMPOUND] = COVARIANT_CAST(nbts_print_handle_compound),
 };
 
 struct nbts_print_handler_data nbts_print_handler_data(FILE *nonnull ostream)
