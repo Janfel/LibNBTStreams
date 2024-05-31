@@ -198,7 +198,7 @@ enum nbts_error nbts_parse_list(
 	struct nbts_handler const *restrict handler,
 	void *restrict userdata)
 {
-	nbts_handler_fn *handler_fn = handler->handle[type];
+	nbts_handler_fn *handler_fn = handler ? handler->handle[type] : nullptr;
 	if (!handler_fn) handler_fn = nbts_skip_handler.handle[type];
 
 	for (size_t i = 0; i < size; ++i) TRY(handler_fn(userdata, 0, stream));
@@ -226,7 +226,7 @@ enum nbts_error nbts_parse_tag(
 
 	if (type == NBTS_END) return NBTS_UNEXPECTED_END_TAG;
 
-	nbts_handler_fn *handler_fn = handler->handle[type];
+	nbts_handler_fn *handler_fn = handler ? handler->handle[type] : nullptr;
 	if (!handler_fn) handler_fn = nbts_skip_handler.handle[type];
 
 	nbts_strsize name_size = 0;
@@ -245,7 +245,7 @@ enum nbts_error nbts_parse_network_tag(
 
 	if (type == NBTS_END) return NBTS_UNEXPECTED_END_TAG;
 
-	nbts_handler_fn *handler_fn = handler->handle[type];
+	nbts_handler_fn *handler_fn = handler ? handler->handle[type] : nullptr;
 	if (!handler_fn) handler_fn = nbts_skip_handler.handle[type];
 
 	nbts_strsize name_size = 0;
