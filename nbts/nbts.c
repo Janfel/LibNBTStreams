@@ -6,10 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(__FLOAT_WORD_ORDER) && __FLOAT_WORD_ORDER != BYTE_ORDER
-#error "Float word order must be the same as byte order"
-#endif
-
 #define NBTS_BYTE_ORDER BIG_ENDIAN
 
 #if NBTS_BYTE_ORDER == BIG_ENDIAN
@@ -22,6 +18,10 @@
 #define nbt64toh(...) le64toh(__VA_ARGS__)
 #else
 #error "Byte order not supported"
+#endif
+
+#if defined(__FLOAT_WORD_ORDER) && __FLOAT_WORD_ORDER != BYTE_ORDER
+#error "Float word order must be the same as byte order"
 #endif
 
 #if __clang__
@@ -215,7 +215,6 @@ enum nbts_error nbts_parse_compound(
 	return NBTS_OK;
 }
 
-// NOLINTNEXTLINE(misc-no-recursion)
 enum nbts_error nbts_parse_tag(
 	FILE *restrict nonnull stream,
 	struct nbts_handler const *restrict handler,
@@ -248,9 +247,7 @@ enum nbts_error nbts_parse_network_tag(
 	nbts_handler_fn *handler_fn = handler ? handler->handle[type] : nullptr;
 	if (!handler_fn) handler_fn = nbts_skip_handler.handle[type];
 
-	nbts_strsize name_size = 0;
-	// TRY(nbts_parse_strsize(&name_size, stream));
-	TRY(handler_fn(userdata, name_size, stream));
+	TRY(handler_fn(userdata, 0, stream));
 	return NBTS_OK;
 }
 
@@ -388,7 +385,6 @@ enum nbts_error nbts_skip_list(void * /**/, nbts_strsize name_size, FILE *restri
 	return NBTS_OK;
 }
 
-// NOLINTNEXTLINE(misc-no-recursion)
 enum nbts_error
 nbts_skip_compound(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
