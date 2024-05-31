@@ -9,7 +9,7 @@ int main()
 
 	struct nbts_print_handler_data data = nbts_print_handler_data(stdout);
 	if ((err = nbts_parse_tag(stdin, &nbts_print_handler, &data))) goto end;
-	if ((err = fputc('\n', stdout))) goto end;
+	if ((err = (fputc('\n', stdout) < 0) * NBTS_WRITE_ERR)) goto end;
 
 end:
 	return err;
