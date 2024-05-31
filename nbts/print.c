@@ -123,47 +123,95 @@ enum nbts_error nbts_fprint_string(
 
 // NOLINTEND(bugprone-easily-swappable-parameters)
 
-enum nbts_error
-nbts_fprint_byte_array(FILE *restrict nonnull ostream, nbts_byte const *restrict array, size_t array_size)
+static enum nbts_error fprint_byte_subarray(
+	FILE *restrict nonnull ostream, nbts_byte const *restrict array, size_t array_size)
 {
-	TRYF(fputs("[B;", stream));
-
 	for (size_t i = 0; i < array_size; ++i) {
-		if (i) TRYF(fputc(',', stream));
-		TRY(nbts_fprint_byte(stream, array[i]));
+		if (i) TRYF(fputc(',', ostream));
+		TRY(nbts_fprint_byte(ostream, array[i]));
+	}
+	return 0;
+}
+
+static enum nbts_error fprint_int_subarray(
+	FILE *restrict nonnull ostream, nbts_int const *restrict array, size_t array_size)
+{
+	for (size_t i = 0; i < array_size; ++i) {
+		if (i) TRYF(fputc(',', ostream));
+		TRY(nbts_fprint_int(ostream, array[i]));
+	}
+	return 0;
+}
+
+static enum nbts_error fprint_long_subarray(
+	FILE *restrict nonnull ostream, nbts_long const *restrict array, size_t array_size)
+{
+	for (size_t i = 0; i < array_size; ++i) {
+		if (i) TRYF(fputc(',', ostream));
+		TRY(nbts_fprint_long(ostream, array[i]));
+	}
+	return 0;
+}
+
+enum nbts_error nbts_fprint_byte_array(
+	FILE *restrict nonnull ostream, FILE *restrict nonnull istream, size_t array_size)
+{
+	enum : size_t { BUFSIZE = FPRINT_BUFSIZE / sizeof(nbts_byte) };
+
+	TRYF(fputs("[B;", ostream));
+
+	nbts_byte subarr[BUFSIZE];
+	for (size_t i = 0; i < (array_size / BUFSIZE) + 1; ++i) {
+		if (i) TRYF(fputc(',', ostream));
+		size_t rest_size = array_size - i * BUFSIZE;
+		size_t subarr_size = rest_size < BUFSIZE ? rest_size : BUFSIZE;
+		TRY(nbts_parse_byte_array(subarr, subarr_size, istream));
+		TRY(fprint_byte_subarray(ostream, subarr, subarr_size));
 	}
 
-	TRYF(fputc(']', stream));
+	TRYF(fputc(']', ostream));
 
 	return 0;
 }
 
-enum nbts_error
-nbts_fprint_int_array(FILE *restrict nonnull ostream, nbts_int const *restrict array, size_t array_size)
+enum nbts_error nbts_fprint_int_array(
+	FILE *restrict nonnull ostream, FILE *restrict nonnull istream, size_t array_size)
 {
-	TRYF(fputs("[I;", stream));
+	enum : size_t { BUFSIZE = FPRINT_BUFSIZE / sizeof(nbts_int) };
 
-	for (size_t i = 0; i < array_size; ++i) {
-		if (i) TRYF(fputc(',', stream));
-		TRY(nbts_fprint_int(stream, array[i]));
+	TRYF(fputs("[I;", ostream));
+
+	nbts_int subarr[BUFSIZE];
+	for (size_t i = 0; i < (array_size / BUFSIZE) + 1; ++i) {
+		if (i) TRYF(fputc(',', ostream));
+		size_t rest_size = array_size - i * BUFSIZE;
+		size_t subarr_size = rest_size < BUFSIZE ? rest_size : BUFSIZE;
+		TRY(nbts_parse_int_array(subarr, subarr_size, istream));
+		TRY(fprint_int_subarray(ostream, subarr, subarr_size));
 	}
 
-	TRYF(fputc(']', stream));
+	TRYF(fputc(']', ostream));
 
 	return 0;
 }
 
-enum nbts_error
-nbts_fprint_long_array(FILE *restrict nonnull ostream, nbts_long const *restrict array, size_t array_size)
+enum nbts_error nbts_fprint_long_array(
+	FILE *restrict nonnull ostream, FILE *restrict nonnull istream, size_t array_size)
 {
-	TRYF(fputs("[L;", stream));
+	enum : size_t { BUFSIZE = FPRINT_BUFSIZE / sizeof(nbts_long) };
 
-	for (size_t i = 0; i < array_size; ++i) {
-		if (i) TRYF(fputc(',', stream));
-		TRY(nbts_fprint_long(stream, array[i]));
+	TRYF(fputs("[L;", ostream));
+
+	nbts_long subarr[BUFSIZE];
+	for (size_t i = 0; i < (array_size / BUFSIZE) + 1; ++i) {
+		if (i) TRYF(fputc(',', ostream));
+		size_t rest_size = array_size - i * BUFSIZE;
+		size_t subarr_size = rest_size < BUFSIZE ? rest_size : BUFSIZE;
+		TRY(nbts_parse_long_array(subarr, subarr_size, istream));
+		TRY(fprint_long_subarray(ostream, subarr, subarr_size));
 	}
 
-	TRYF(fputc(']', stream));
+	TRYF(fputc(']', ostream));
 
 	return 0;
 }
@@ -321,24 +369,9 @@ enum nbts_error nbts_print_handle_byte_array(
 
 	nbts_size array_size = 0;
 	TRY(nbts_parse_size(&array_size, stream));
+	TRY(nbts_fprint_byte_array(data->ostream, stream, array_size));
 
-	if ((size_t) array_size < NBTS_MAX_STACK_BUFFER_SIZE) {
-		nbts_byte array[array_size + 1];
-		TRY(nbts_parse_byte_array(array, array_size, stream));
-		TRY(nbts_fprint_byte_array(data->ostream, array, array_size));
-		return NBTS_OK;
-	}
-
-	nbts_byte *array = malloc(array_size * sizeof(*array));
-	if (!array) return NBTS_BAD_ALLOC;
-
-	enum nbts_error err = NBTS_OK;
-	if ((err = nbts_parse_byte_array(array, array_size, stream))) goto cleanup;
-	if ((err = nbts_fprint_byte_array(data->ostream, array, array_size))) goto cleanup;
-
-cleanup:
-	free(array);
-	return err;
+	return NBTS_OK;
 }
 
 enum nbts_error nbts_print_handle_int_array(
@@ -350,24 +383,9 @@ enum nbts_error nbts_print_handle_int_array(
 
 	nbts_size array_size = 0;
 	TRY(nbts_parse_size(&array_size, stream));
+	TRY(nbts_fprint_byte_array(data->ostream, stream, array_size));
 
-	if ((size_t) array_size < NBTS_MAX_STACK_BUFFER_SIZE) {
-		nbts_int array[array_size + 1];
-		TRY(nbts_parse_int_array(array, array_size, stream));
-		TRY(nbts_fprint_int_array(data->ostream, array, array_size));
-		return NBTS_OK;
-	}
-
-	nbts_int *array = malloc(array_size * sizeof(*array));
-	if (!array) return NBTS_BAD_ALLOC;
-
-	enum nbts_error err = NBTS_OK;
-	if ((err = nbts_parse_int_array(array, array_size, stream))) goto cleanup;
-	if ((err = nbts_fprint_int_array(data->ostream, array, array_size))) goto cleanup;
-
-cleanup:
-	free(array);
-	return err;
+	return NBTS_OK;
 }
 
 enum nbts_error nbts_print_handle_long_array(
@@ -379,24 +397,9 @@ enum nbts_error nbts_print_handle_long_array(
 
 	nbts_size array_size = 0;
 	TRY(nbts_parse_size(&array_size, stream));
+	TRY(nbts_fprint_byte_array(data->ostream, stream, array_size));
 
-	if ((size_t) array_size < NBTS_MAX_STACK_BUFFER_SIZE) {
-		nbts_long array[array_size + 1];
-		TRY(nbts_parse_long_array(array, array_size, stream));
-		TRY(nbts_fprint_long_array(data->ostream, array, array_size));
-		return NBTS_OK;
-	}
-
-	nbts_long *array = malloc(array_size * sizeof(*array));
-	if (!array) return NBTS_BAD_ALLOC;
-
-	enum nbts_error err = NBTS_OK;
-	if ((err = nbts_parse_long_array(array, array_size, stream))) goto cleanup;
-	if ((err = nbts_fprint_long_array(data->ostream, array, array_size))) goto cleanup;
-
-cleanup:
-	free(array);
-	return err;
+	return NBTS_OK;
 }
 
 enum nbts_error nbts_print_handle_list(

@@ -255,27 +255,6 @@ enum nbts_error nbts_parse_tag(
 	TRY(nbts_parse_strsize(&name_size, stream));
 	TRY(handler_fn(userdata, name_size, stream));
 	return NBTS_OK;
-
-	/*
-
-	if (name_size < NBTS_MAX_STACK_BUFFER_SIZE) {
-	    nbts_char name[name_size + 1];
-	    TRY(nbts_parse_string(name, name_size, stream));
-	    TRY(handler_fn(userdata, name, name_size, stream));
-	    return NBTS_OK;
-	}
-
-	nbts_char *name = malloc(name_size * sizeof(*name));
-	if (!name) return NBTS_BAD_ALLOC;
-
-	enum nbts_error err = NBTS_OK;
-	if ((err = nbts_parse_string(name, name_size, stream))) goto cleanup;
-	if ((err = handler_fn(userdata, name, name_size, stream))) goto cleanup;
-
-cleanup:
-	free(name);
-	return err;
-	*/
 }
 
 #undef PARSE_TAG_CASE
