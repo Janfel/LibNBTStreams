@@ -30,9 +30,11 @@ xfwrite(void const *restrict nonnull ptr, size_t size, size_t count, FILE *restr
 	return 1;
 }
 
-#define COVARIANT_CAST(FUNC, ...)                                         \
-	(sizeof((&FUNC)((void *) 0, (size_t) 0, (FILE *restrict nonnull) 0)), \
-	 (enum nbts_error(*)(void *, size_t, FILE *restrict nonnull))(&FUNC))
+#define COVARIANT_CAST(FUNC, ...)                                                            \
+	(_Generic(                                                                               \
+		(&FUNC)((void *) 0, (nbts_strsize) 0, (FILE *restrict nonnull) 0),                   \
+		enum nbts_error: (enum nbts_error(*)(void *, nbts_strsize, FILE *restrict nonnull))( \
+			&FUNC)))
 
 struct nbts_handler const nbts_print_handler = {
 	.handle[NBTS_BYTE] = COVARIANT_CAST(nbts_print_handle_byte),
@@ -56,7 +58,7 @@ struct nbts_print_handler_data nbts_print_handler_data(FILE *nonnull ostream)
 
 static inline enum nbts_error print_prefix(
 	struct nbts_print_handler_data *restrict nonnull data,
-	size_t name_size,
+	nbts_strsize name_size,
 	FILE *restrict nonnull stream)
 {
 	if (data->index) {
@@ -74,7 +76,7 @@ static inline enum nbts_error print_prefix(
 
 enum nbts_error nbts_print_handle_byte(
 	struct nbts_print_handler_data *restrict nonnull data,
-	size_t name_size,
+	nbts_strsize name_size,
 	FILE *restrict nonnull stream)
 {
 	TRY(print_prefix(data, name_size, stream));
@@ -89,7 +91,7 @@ enum nbts_error nbts_print_handle_byte(
 
 enum nbts_error nbts_print_handle_short(
 	struct nbts_print_handler_data *restrict nonnull data,
-	size_t name_size,
+	nbts_strsize name_size,
 	FILE *restrict nonnull stream)
 {
 	TRY(print_prefix(data, name_size, stream));
@@ -104,7 +106,7 @@ enum nbts_error nbts_print_handle_short(
 
 enum nbts_error nbts_print_handle_int(
 	struct nbts_print_handler_data *restrict nonnull data,
-	size_t name_size,
+	nbts_strsize name_size,
 	FILE *restrict nonnull stream)
 {
 	TRY(print_prefix(data, name_size, stream));
@@ -119,7 +121,7 @@ enum nbts_error nbts_print_handle_int(
 
 enum nbts_error nbts_print_handle_long(
 	struct nbts_print_handler_data *restrict nonnull data,
-	size_t name_size,
+	nbts_strsize name_size,
 	FILE *restrict nonnull stream)
 {
 	TRY(print_prefix(data, name_size, stream));
@@ -134,7 +136,7 @@ enum nbts_error nbts_print_handle_long(
 
 enum nbts_error nbts_print_handle_float(
 	struct nbts_print_handler_data *restrict nonnull data,
-	size_t name_size,
+	nbts_strsize name_size,
 	FILE *restrict nonnull stream)
 {
 	TRY(print_prefix(data, name_size, stream));
@@ -149,7 +151,7 @@ enum nbts_error nbts_print_handle_float(
 
 enum nbts_error nbts_print_handle_double(
 	struct nbts_print_handler_data *restrict nonnull data,
-	size_t name_size,
+	nbts_strsize name_size,
 	FILE *restrict nonnull stream)
 {
 	TRY(print_prefix(data, name_size, stream));
@@ -164,7 +166,7 @@ enum nbts_error nbts_print_handle_double(
 
 enum nbts_error nbts_print_handle_string(
 	struct nbts_print_handler_data *restrict nonnull data,
-	size_t name_size,
+	nbts_strsize name_size,
 	FILE *restrict nonnull stream)
 {
 	TRY(print_prefix(data, name_size, stream));
@@ -180,7 +182,7 @@ enum nbts_error nbts_print_handle_string(
 
 enum nbts_error nbts_print_handle_byte_array(
 	struct nbts_print_handler_data *restrict nonnull data,
-	size_t name_size,
+	nbts_strsize name_size,
 	FILE *restrict nonnull stream)
 {
 	TRY(print_prefix(data, name_size, stream));
@@ -195,7 +197,7 @@ enum nbts_error nbts_print_handle_byte_array(
 
 enum nbts_error nbts_print_handle_int_array(
 	struct nbts_print_handler_data *restrict nonnull data,
-	size_t name_size,
+	nbts_strsize name_size,
 	FILE *restrict nonnull stream)
 {
 	TRY(print_prefix(data, name_size, stream));
@@ -210,7 +212,7 @@ enum nbts_error nbts_print_handle_int_array(
 
 enum nbts_error nbts_print_handle_long_array(
 	struct nbts_print_handler_data *restrict nonnull data,
-	size_t name_size,
+	nbts_strsize name_size,
 	FILE *restrict nonnull stream)
 {
 	TRY(print_prefix(data, name_size, stream));
@@ -225,7 +227,7 @@ enum nbts_error nbts_print_handle_long_array(
 
 enum nbts_error nbts_print_handle_list(
 	struct nbts_print_handler_data *restrict nonnull data,
-	size_t name_size,
+	nbts_strsize name_size,
 	FILE *restrict nonnull stream)
 {
 	TRY(print_prefix(data, name_size, stream));
@@ -251,7 +253,7 @@ enum nbts_error nbts_print_handle_list(
 
 enum nbts_error nbts_print_handle_compound(
 	struct nbts_print_handler_data *restrict nonnull data,
-	size_t name_size,
+	nbts_strsize name_size,
 	FILE *restrict nonnull stream)
 {
 	TRY(print_prefix(data, name_size, stream));

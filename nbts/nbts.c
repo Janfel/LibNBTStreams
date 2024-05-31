@@ -270,59 +270,66 @@ struct nbts_handler const nbts_skip_handler = {
 	.handle[NBTS_COMPOUND] = &nbts_skip_compound,
 };
 
-enum nbts_error nbts_skip_end(void * /**/, size_t name_size, FILE *restrict nonnull stream)
+static inline enum nbts_error skip_name(nbts_strsize name_size, FILE *restrict nonnull stream)
 {
-	if (name_size && fseek(stream, name_size * sizeof(nbts_char), SEEK_CUR) == -1)
+	if (name_size && fseek(stream, name_size * (long) sizeof(nbts_char), SEEK_CUR) == -1)
 		return NBTS_READ_ERR;
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_byte(void * /**/, size_t name_size, FILE *restrict nonnull stream)
+static inline enum nbts_error
+skip_name_and_data(nbts_strsize name_size, FILE *restrict nonnull stream, long data_size)
 {
-	if (fseek(stream, (name_size * sizeof(nbts_char)) + sizeof(nbts_byte), SEEK_CUR) == -1)
+	if (fseek(stream, name_size * (long) sizeof(nbts_char) + data_size, SEEK_CUR) == -1)
 		return NBTS_READ_ERR;
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_short(void * /**/, size_t name_size, FILE *restrict nonnull stream)
+enum nbts_error nbts_skip_end(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
-	if (fseek(stream, (name_size * sizeof(nbts_char)) + sizeof(nbts_short), SEEK_CUR) == -1)
-		return NBTS_READ_ERR;
+	TRY(skip_name(name_size, stream));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_int(void * /**/, size_t name_size, FILE *restrict nonnull stream)
+enum nbts_error nbts_skip_byte(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
-	if (fseek(stream, (name_size * sizeof(nbts_char)) + sizeof(nbts_int), SEEK_CUR) == -1)
-		return NBTS_READ_ERR;
+	TRY(skip_name_and_data(name_size, stream, sizeof(nbts_byte)));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_long(void * /**/, size_t name_size, FILE *restrict nonnull stream)
+enum nbts_error nbts_skip_short(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
-	if (fseek(stream, (name_size * sizeof(nbts_char)) + sizeof(nbts_long), SEEK_CUR) == -1)
-		return NBTS_READ_ERR;
+	TRY(skip_name_and_data(name_size, stream, sizeof(nbts_short)));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_float(void * /**/, size_t name_size, FILE *restrict nonnull stream)
+enum nbts_error nbts_skip_int(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
-	if (fseek(stream, (name_size * sizeof(nbts_char)) + sizeof(nbts_float), SEEK_CUR) == -1)
-		return NBTS_READ_ERR;
+	TRY(skip_name_and_data(name_size, stream, sizeof(nbts_int)));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_double(void * /**/, size_t name_size, FILE *restrict nonnull stream)
+enum nbts_error nbts_skip_long(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
-	if (fseek(stream, (name_size * sizeof(nbts_char)) + sizeof(nbts_double), SEEK_CUR) == -1)
-		return NBTS_READ_ERR;
+	TRY(skip_name_and_data(name_size, stream, sizeof(nbts_long)));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_string(void * /**/, size_t name_size, FILE *restrict nonnull stream)
+enum nbts_error nbts_skip_float(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
-	if (name_size && fseek(stream, name_size * sizeof(nbts_char), SEEK_CUR) == -1)
-		return NBTS_READ_ERR;
+	TRY(skip_name_and_data(name_size, stream, sizeof(nbts_float)));
+	return NBTS_OK;
+}
+
+enum nbts_error nbts_skip_double(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+{
+	TRY(skip_name_and_data(name_size, stream, sizeof(nbts_double)));
+	return NBTS_OK;
+}
+
+enum nbts_error nbts_skip_string(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+{
+	TRY(skip_name(name_size, stream));
 
 	nbts_strsize size = 0;
 	TRY(nbts_parse_strsize(&size, stream));
@@ -330,10 +337,10 @@ enum nbts_error nbts_skip_string(void * /**/, size_t name_size, FILE *restrict n
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_byte_array(void * /**/, size_t name_size, FILE *restrict nonnull stream)
+enum nbts_error
+nbts_skip_byte_array(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
-	if (name_size && fseek(stream, name_size * sizeof(nbts_char), SEEK_CUR) == -1)
-		return NBTS_READ_ERR;
+	TRY(skip_name(name_size, stream));
 
 	nbts_size size = 0;
 	TRY(nbts_parse_size(&size, stream));
@@ -341,10 +348,10 @@ enum nbts_error nbts_skip_byte_array(void * /**/, size_t name_size, FILE *restri
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_int_array(void * /**/, size_t name_size, FILE *restrict nonnull stream)
+enum nbts_error
+nbts_skip_int_array(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
-	if (name_size && fseek(stream, name_size * sizeof(nbts_char), SEEK_CUR) == -1)
-		return NBTS_READ_ERR;
+	TRY(skip_name(name_size, stream));
 
 	nbts_size size = 0;
 	TRY(nbts_parse_int(&size, stream));
@@ -352,10 +359,10 @@ enum nbts_error nbts_skip_int_array(void * /**/, size_t name_size, FILE *restric
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_long_array(void * /**/, size_t name_size, FILE *restrict nonnull stream)
+enum nbts_error
+nbts_skip_long_array(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
-	if (name_size && fseek(stream, name_size * sizeof(nbts_char), SEEK_CUR) == -1)
-		return NBTS_READ_ERR;
+	TRY(skip_name(name_size, stream));
 
 	nbts_size size = 0;
 	TRY(nbts_parse_size(&size, stream));
@@ -363,10 +370,9 @@ enum nbts_error nbts_skip_long_array(void * /**/, size_t name_size, FILE *restri
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_list(void * /**/, size_t name_size, FILE *restrict nonnull stream)
+enum nbts_error nbts_skip_list(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
-	if (name_size && fseek(stream, name_size * sizeof(nbts_char), SEEK_CUR) == -1)
-		return NBTS_READ_ERR;
+	TRY(skip_name(name_size, stream));
 
 	enum nbts_type type = 0;
 	TRY(nbts_parse_typeid(&type, stream));
@@ -383,11 +389,10 @@ enum nbts_error nbts_skip_list(void * /**/, size_t name_size, FILE *restrict non
 }
 
 // NOLINTNEXTLINE(misc-no-recursion)
-enum nbts_error nbts_skip_compound(void * /**/, size_t name_size, FILE *restrict nonnull stream)
+enum nbts_error
+nbts_skip_compound(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
-	if (name_size && fseek(stream, name_size * sizeof(nbts_char), SEEK_CUR) == -1)
-		return NBTS_READ_ERR;
-
+	TRY(skip_name(name_size, stream));
 	while (1) TRY(nbts_parse_tag(stream, nullptr, nullptr), CATCH(NBTS_UNEXPECTED_END_TAG, break));
 	return NBTS_OK;
 }

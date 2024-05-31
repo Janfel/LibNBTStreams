@@ -55,7 +55,7 @@ typedef int32_t nbts_size;
 typedef uint16_t nbts_strsize;
 
 typedef enum nbts_error
-nbts_handler_fn(void *userdata, size_t name_size, FILE *restrict nonnull stream);
+nbts_handler_fn(void *userdata, nbts_strsize name_size, FILE *restrict nonnull stream);
 
 struct nbts_handler {
 	nbts_handler_fn *handle[NBTS_TYPE_ENUM_SIZE];
@@ -112,19 +112,19 @@ enum nbts_error nbts_parse_network_tag(
 
 extern struct nbts_handler const nbts_skip_handler;
 
-enum nbts_error nbts_skip_end(void *, size_t name_size, FILE *restrict nonnull stream);
-enum nbts_error nbts_skip_byte(void *, size_t name_size, FILE *restrict nonnull stream);
-enum nbts_error nbts_skip_short(void *, size_t name_size, FILE *restrict nonnull stream);
-enum nbts_error nbts_skip_int(void *, size_t name_size, FILE *restrict nonnull stream);
-enum nbts_error nbts_skip_long(void *, size_t name_size, FILE *restrict nonnull stream);
-enum nbts_error nbts_skip_float(void *, size_t name_size, FILE *restrict nonnull stream);
-enum nbts_error nbts_skip_double(void *, size_t name_size, FILE *restrict nonnull stream);
-enum nbts_error nbts_skip_string(void *, size_t name_size, FILE *restrict nonnull stream);
-enum nbts_error nbts_skip_byte_array(void *, size_t name_size, FILE *restrict nonnull stream);
-enum nbts_error nbts_skip_int_array(void *, size_t name_size, FILE *restrict nonnull stream);
-enum nbts_error nbts_skip_long_array(void *, size_t name_size, FILE *restrict nonnull stream);
-enum nbts_error nbts_skip_list(void *, size_t name_size, FILE *restrict nonnull stream);
-enum nbts_error nbts_skip_compound(void *, size_t name_size, FILE *restrict nonnull stream);
+enum nbts_error nbts_skip_end(void *, nbts_strsize name_size, FILE *restrict nonnull stream);
+enum nbts_error nbts_skip_byte(void *, nbts_strsize name_size, FILE *restrict nonnull stream);
+enum nbts_error nbts_skip_short(void *, nbts_strsize name_size, FILE *restrict nonnull stream);
+enum nbts_error nbts_skip_int(void *, nbts_strsize name_size, FILE *restrict nonnull stream);
+enum nbts_error nbts_skip_long(void *, nbts_strsize name_size, FILE *restrict nonnull stream);
+enum nbts_error nbts_skip_float(void *, nbts_strsize name_size, FILE *restrict nonnull stream);
+enum nbts_error nbts_skip_double(void *, nbts_strsize name_size, FILE *restrict nonnull stream);
+enum nbts_error nbts_skip_string(void *, nbts_strsize name_size, FILE *restrict nonnull stream);
+enum nbts_error nbts_skip_byte_array(void *, nbts_strsize name_size, FILE *restrict nonnull stream);
+enum nbts_error nbts_skip_int_array(void *, nbts_strsize name_size, FILE *restrict nonnull stream);
+enum nbts_error nbts_skip_long_array(void *, nbts_strsize name_size, FILE *restrict nonnull stream);
+enum nbts_error nbts_skip_list(void *, nbts_strsize name_size, FILE *restrict nonnull stream);
+enum nbts_error nbts_skip_compound(void *, nbts_strsize name_size, FILE *restrict nonnull stream);
 
 #undef nonnull
 #undef nullable
