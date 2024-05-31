@@ -33,7 +33,7 @@ enum nbts_type : uint8_t {
 
 enum : uint8_t { NBTS_TYPE_ENUM_SIZE = 13 };
 
-enum nbts_error {
+enum [[nodiscard]] nbts_error {
 	NBTS_OK,
 	NBTS_READ_ERR,
 	NBTS_WRITE_ERR,
