@@ -12,7 +12,7 @@ include(GNUInstallDirs)
 set(CMAKE_C_EXTENSIONS OFF)
 
 option(BUILD_SHARED_LIBS "Build shared library" OFF)
-option(NBTStreams_BUILD_EXECUTABLES "Build executable binaries" ${PROJECT_IS_TOP_LEVEL})
+option(NBTStreams_BUILD_TOOLS "Build executable binaries/tests" ${PROJECT_IS_TOP_LEVEL})
 option(NBTStreams_BUILD_WITH_SANITIZERS "Build with sanitizers" OFF)
 
 add_library(NBTStreams_Options INTERFACE)
@@ -64,7 +64,7 @@ export(EXPORT NBTStreamsTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/NBTStrea
 #     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/NBTStreams"
 # )
 
-if(NBTStreams_BUILD_EXECUTABLES)
-    add_executable(nbts_print nbts/print.main.c)
+if(NBTStreams_BUILD_TOOLS)
+    add_executable(nbts_print tools/print.c)
     target_link_libraries(nbts_print PRIVATE NBTStreams NBTStreams_Options)
 endif()
