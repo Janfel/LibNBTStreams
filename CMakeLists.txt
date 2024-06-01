@@ -17,7 +17,7 @@ option(NBTStreams_BUILD_WITH_SANITIZERS "Build with sanitizers" OFF)
 
 add_library(NBTStreams_Options INTERFACE)
 if(CMAKE_C_COMPILER_FRONTEND_VARIANT STREQUAL "GNU")
-    target_compile_options(NBTStreams_Options INTERFACE -Wall -Wextra -Werror=switch -fno-semantic-interposition)
+    target_compile_options(NBTStreams_Options INTERFACE -Wall -Wextra -Werror=switch -Wno-nullability-completeness -fno-semantic-interposition)
     if(NBTStreams_BUILD_WITH_SANITIZERS)
         target_compile_options(NBTStreams_Options INTERFACE -fsanitize=address,undefined -fno-omit-frame-pointer)
         target_link_options(NBTStreams_Options INTERFACE -fsanitize=address,undefined)
@@ -67,4 +67,11 @@ export(EXPORT NBTStreamsTargets FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/NBTStrea
 if(NBTStreams_BUILD_TOOLS)
     add_executable(nbts_print tools/print.c)
     target_link_libraries(nbts_print PRIVATE NBTStreams NBTStreams_Options)
+
+    add_library(NBTStreams_Fuzz_Options INTERFACE)
+    target_compile_options(NBTStreams_Fuzz_Options INTERFACE -fsanitize=fuzzer)
+    target_link_options(NBTStreams_Fuzz_Options INTERFACE -fsanitize=fuzzer)
+
+    add_executable(nbts_fuzz tools/fuzz.c)
+    target_link_libraries(nbts_fuzz PRIVATE NBTStreams NBTStreams_Options NBTStreams_Fuzz_Options)
 endif()
