@@ -197,6 +197,8 @@ enum nbts_error nbts_parse_list(
 	struct nbts_handler const *restrict nullable handler,
 	void *restrict nullable userdata)
 {
+	if (type == NBTS_END) return NBTS_OK;
+
 	nbts_handler_fn *handler_fn = handler ? handler->handle[type] : nullptr;
 	if (!handler_fn) handler_fn = nbts_skip_handler.handle[type];
 

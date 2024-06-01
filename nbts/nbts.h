@@ -73,20 +73,25 @@ typedef uint16_t nbts_strsize;
 
 /// The type of an NBT handler callback.
 ///
+/// See \ref nbts_handler for more details.
+typedef enum nbts_error
+nbts_handler_fn(void *nullable userdata, nbts_strsize name_size, FILE *restrict nonnull stream);
+
+/// Structure holding \ref nbts_handler_fn instances for all values of \ref nbts_type.
+///
 /// Each callback shall be valid for one specific value of \ref nbts_type. The
 /// callback will be called with the user-provided value for `userdata`. It
 /// shall first read `name_size` bytes from `stream`, forming the name of the
 /// tag. It shall then parse one payload of the type for which it is valid and
 /// leave the `stream` after the last byte of the payload.
-typedef enum nbts_error
-nbts_handler_fn(void *nullable userdata, nbts_strsize name_size, FILE *restrict nonnull stream);
-
-/// Structure holding \ref nbts_handler_fn instances for all values of \ref nbts_type.
+///
+/// If a callback is not provided, the payload is skipped as if by
+/// \ref nbts_skip_handler.
+///
+/// The callback corresponding to the type \ref NBTS_END will never be called,
+/// so there is no need to provide one.
 struct nbts_handler {
 	/// Array mapping \ref nbts_type values to \ref nbts_handler_fn pointers.
-	///
-	/// If the resulting pointer is `nullptr`, the payload is skipped as if by
-	/// \ref nbts_skip_handler.
 	nbts_handler_fn *nullable handle[NBTS_TYPE_ENUM_SIZE];
 };
 
