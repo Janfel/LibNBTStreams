@@ -1,7 +1,6 @@
 #include <nbts/print.h>
 
 #include <inttypes.h>
-#include <stdlib.h>
 #include <string.h>
 
 #if __clang__

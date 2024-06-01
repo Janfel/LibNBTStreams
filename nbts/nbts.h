@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <uchar.h>
 
 #if __clang__
 #define nonnull  _Nonnull
