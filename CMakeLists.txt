@@ -68,6 +68,7 @@ if(NBTStreams_BUILD_TOOLS)
     add_executable(nbts_print tools/print.c)
     target_link_libraries(nbts_print PRIVATE NBTStreams NBTStreams_Options)
 
+    # i needed to configure cmake with command "cmake -DCMAKE_C_COMPILER=clang .." to get it working
     add_library(NBTStreams_Fuzz_Options INTERFACE)
     target_compile_options(NBTStreams_Fuzz_Options INTERFACE -fsanitize=fuzzer)
     target_link_options(NBTStreams_Fuzz_Options INTERFACE -fsanitize=fuzzer)
