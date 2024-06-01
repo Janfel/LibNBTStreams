@@ -197,6 +197,8 @@ enum nbts_error nbts_parse_list(
 	struct nbts_handler const *restrict handler,
 	void *restrict userdata)
 {
+	if(type == NBTS_END) return NBTS_UNEXPECTED_END_TAG;
+	
 	nbts_handler_fn *handler_fn = handler ? handler->handle[type] : nbts_skip_handler.handle[type];
 
 	for (size_t i = 0; i < size; ++i) TRY(handler_fn(userdata, 0, stream));
