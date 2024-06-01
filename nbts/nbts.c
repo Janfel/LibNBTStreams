@@ -194,8 +194,8 @@ enum nbts_error nbts_parse_list(
 	enum nbts_type type,
 	size_t size,
 	FILE *restrict nonnull stream,
-	struct nbts_handler const *restrict handler,
-	void *restrict userdata)
+	struct nbts_handler const *restrict nullable handler,
+	void *restrict nullable userdata)
 {
 	nbts_handler_fn *handler_fn = handler ? handler->handle[type] : nullptr;
 	if (!handler_fn) handler_fn = nbts_skip_handler.handle[type];
@@ -207,8 +207,8 @@ enum nbts_error nbts_parse_list(
 
 enum nbts_error nbts_parse_compound(
 	FILE *restrict nonnull stream,
-	struct nbts_handler const *restrict handler,
-	void *restrict userdata)
+	struct nbts_handler const *restrict nullable handler,
+	void *restrict nullable userdata)
 {
 	while (1) TRY(nbts_parse_tag(stream, handler, userdata), CATCH(NBTS_UNEXPECTED_END_TAG, break));
 	return NBTS_OK;
@@ -216,8 +216,8 @@ enum nbts_error nbts_parse_compound(
 
 enum nbts_error nbts_parse_tag(
 	FILE *restrict nonnull stream,
-	struct nbts_handler const *restrict handler,
-	void *restrict userdata)
+	struct nbts_handler const *restrict nullable handler,
+	void *restrict nullable userdata)
 {
 	enum nbts_type type = 0;
 	TRY(nbts_parse_typeid(&type, stream));
@@ -235,8 +235,8 @@ enum nbts_error nbts_parse_tag(
 
 enum nbts_error nbts_parse_network_tag(
 	FILE *restrict nonnull stream,
-	struct nbts_handler const *restrict handler,
-	void *restrict userdata)
+	struct nbts_handler const *restrict nullable handler,
+	void *restrict nullable userdata)
 {
 	enum nbts_type type = 0;
 	TRY(nbts_parse_typeid(&type, stream));
@@ -281,49 +281,57 @@ skip_name_and_data(nbts_strsize name_size, FILE *restrict nonnull stream, long d
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_end(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+enum nbts_error
+nbts_skip_end(void *nullable /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
 	TRY(skip_name(name_size, stream));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_byte(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+enum nbts_error
+nbts_skip_byte(void *nullable /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
 	TRY(skip_name_and_data(name_size, stream, sizeof(nbts_byte)));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_short(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+enum nbts_error
+nbts_skip_short(void *nullable /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
 	TRY(skip_name_and_data(name_size, stream, sizeof(nbts_short)));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_int(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+enum nbts_error
+nbts_skip_int(void *nullable /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
 	TRY(skip_name_and_data(name_size, stream, sizeof(nbts_int)));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_long(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+enum nbts_error
+nbts_skip_long(void *nullable /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
 	TRY(skip_name_and_data(name_size, stream, sizeof(nbts_long)));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_float(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+enum nbts_error
+nbts_skip_float(void *nullable /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
 	TRY(skip_name_and_data(name_size, stream, sizeof(nbts_float)));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_double(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+enum nbts_error
+nbts_skip_double(void *nullable /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
 	TRY(skip_name_and_data(name_size, stream, sizeof(nbts_double)));
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_string(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+enum nbts_error
+nbts_skip_string(void *nullable /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
 	TRY(skip_name(name_size, stream));
 
@@ -334,7 +342,7 @@ enum nbts_error nbts_skip_string(void * /**/, nbts_strsize name_size, FILE *rest
 }
 
 enum nbts_error
-nbts_skip_byte_array(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+nbts_skip_byte_array(void *nullable /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
 	TRY(skip_name(name_size, stream));
 
@@ -345,7 +353,7 @@ nbts_skip_byte_array(void * /**/, nbts_strsize name_size, FILE *restrict nonnull
 }
 
 enum nbts_error
-nbts_skip_int_array(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+nbts_skip_int_array(void *nullable /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
 	TRY(skip_name(name_size, stream));
 
@@ -356,7 +364,7 @@ nbts_skip_int_array(void * /**/, nbts_strsize name_size, FILE *restrict nonnull 
 }
 
 enum nbts_error
-nbts_skip_long_array(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+nbts_skip_long_array(void *nullable /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
 	TRY(skip_name(name_size, stream));
 
@@ -366,7 +374,8 @@ nbts_skip_long_array(void * /**/, nbts_strsize name_size, FILE *restrict nonnull
 	return NBTS_OK;
 }
 
-enum nbts_error nbts_skip_list(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+enum nbts_error
+nbts_skip_list(void *nullable /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
 	TRY(skip_name(name_size, stream));
 
@@ -385,7 +394,7 @@ enum nbts_error nbts_skip_list(void * /**/, nbts_strsize name_size, FILE *restri
 }
 
 enum nbts_error
-nbts_skip_compound(void * /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
+nbts_skip_compound(void *nullable /**/, nbts_strsize name_size, FILE *restrict nonnull stream)
 {
 	TRY(skip_name(name_size, stream));
 	while (1) TRY(nbts_parse_tag(stream, nullptr, nullptr), CATCH(NBTS_UNEXPECTED_END_TAG, break));
