@@ -1,5 +1,19 @@
 #pragma once
 
+/// \file
+///
+///	\brief The core of the NBTStreams library, providing \ref nbts_parse_tag()
+/// and \ref nbts_parse_network_tag().
+///
+/// These functions take their input data as a stream (`FILE *`) and parse it
+/// sequentially. For each tag, a handler function is called to parse and
+/// interpret the tag’s name and payload. This is done so users of this library
+/// can write custom modules to handle the incoming NBT data as they see fit.
+///
+/// The basic parsing functions **never** allocate dynamic memory, so if you
+/// want to store the parsed data on the heap you have to use a module that
+/// does.
+
 #include <stdint.h>
 #include <stdio.h>
 
@@ -191,32 +205,61 @@ enum nbts_error nbts_parse_network_tag(
 	struct nbts_handler const *restrict nullable handler,
 	void *restrict nullable userdata);
 
+/// An \ref nbts_handler that just skips over the input.
+///
+/// This handler just advances the input stream past the payload. The `userdata`
+/// argument is ignored for all callbacks.
 extern struct nbts_handler const nbts_skip_handler;
 
+/// Advances `stream` past past one (possibly named) \ref NBTS_END payload.
 enum nbts_error
 nbts_skip_end(void *nullable, nbts_strsize name_size, FILE *restrict nonnull stream);
+
+/// Advances `stream` past past one (possibly named) \ref NBTS_BYTE payload.
 enum nbts_error
 nbts_skip_byte(void *nullable, nbts_strsize name_size, FILE *restrict nonnull stream);
+
+/// Advances `stream` past past one (possibly named) \ref NBTS_SHORT payload.
 enum nbts_error
 nbts_skip_short(void *nullable, nbts_strsize name_size, FILE *restrict nonnull stream);
+
+/// Advances `stream` past past one (possibly named) \ref NBTS_INT payload.
 enum nbts_error
 nbts_skip_int(void *nullable, nbts_strsize name_size, FILE *restrict nonnull stream);
+
+/// Advances `stream` past past one (possibly named) \ref NBTS_LONG payload.
 enum nbts_error
 nbts_skip_long(void *nullable, nbts_strsize name_size, FILE *restrict nonnull stream);
+
+/// Advances `stream` past past one (possibly named) \ref NBTS_FLOAT payload.
 enum nbts_error
 nbts_skip_float(void *nullable, nbts_strsize name_size, FILE *restrict nonnull stream);
+
+/// Advances `stream` past past one (possibly named) \ref NBTS_DOUBLE payload.
 enum nbts_error
 nbts_skip_double(void *nullable, nbts_strsize name_size, FILE *restrict nonnull stream);
+
+/// Advances `stream` past past one (possibly named) \ref NBTS_STRING payload.
 enum nbts_error
 nbts_skip_string(void *nullable, nbts_strsize name_size, FILE *restrict nonnull stream);
+
+/// Advances `stream` past past one (possibly named) \ref NBTS_BYTE_ARRAY payload.
 enum nbts_error
 nbts_skip_byte_array(void *nullable, nbts_strsize name_size, FILE *restrict nonnull stream);
+
+/// Advances `stream` past past one (possibly named) \ref NBTS_INT_ARRAY payload.
 enum nbts_error
 nbts_skip_int_array(void *nullable, nbts_strsize name_size, FILE *restrict nonnull stream);
+
+/// Advances `stream` past past one (possibly named) \ref NBTS_LONG_ARRAY payload.
 enum nbts_error
 nbts_skip_long_array(void *nullable, nbts_strsize name_size, FILE *restrict nonnull stream);
+
+/// Advances `stream` past past one (possibly named) \ref NBTS_LIST payload.
 enum nbts_error
 nbts_skip_list(void *nullable, nbts_strsize name_size, FILE *restrict nonnull stream);
+
+/// Advances `stream` past past one (possibly named) \ref NBTS_COMPOUND payload.
 enum nbts_error
 nbts_skip_compound(void *nullable, nbts_strsize name_size, FILE *restrict nonnull stream);
 
