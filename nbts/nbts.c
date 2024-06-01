@@ -3,7 +3,6 @@
 #include <endian.h>
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #define NBTS_BYTE_ORDER BIG_ENDIAN
